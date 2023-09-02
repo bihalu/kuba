@@ -20,7 +20,6 @@ cd kuba
 ```
 
 Finally a setup package with a size of 1.4GB is created :-)
-> Be patient creating self extracting archive ...  
 > build kuba-setup-1.28.0.tgz.self took 15 minutes 53 seconds
 
 # setup
@@ -61,7 +60,7 @@ Has yet to be documented
 Just a short overview, reference to [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)
 
 # requirements
-Kubernetes itself doesn't need a lot of resources. It is designed to distribute the load across many nodes. If you want to operate heavy workloads in the cluster, then the resources for worker nodes must be adjusted in any case.
+Kubernetes itself doesn't need a lot of resources. It is designed to distribute the load across many nodes. If you want to operate heavy workloads in the cluster, then the count and resources for worker nodes must be adjusted in any case.
 
 | Node | Minimum | Recommended |
 | --- | --- | --- |
@@ -77,10 +76,13 @@ Kuba uses openEBS as a storage solution. openEBS local PV with Hostpath is used 
 In a more complex scenario with multiple worker nodes, you need a different storage solution. I would also like to examine openEBS with mayastor and rook ceph.
 
 # network
-Kubernetes has no specifications regarding the network. Only the nodes need to be able to communicate with each other.  
+Kubernetes has no specifications regarding the network. Only the nodes need to be able to communicate with each other. In practice, of course, you have to take things like a firewall or subnets into account. You also need a load balancer if you want to access the cluster from outside.  
 
-In practice, of course, you have to take things like a firewall or subnets into account.  
+## homelab network example
+As an example i would like to give a typical homelab network for a kubernetes cluster. You can access the kubernetes cluster within your homelab network via node ports.  
+If you have a VPS with a public ip you can create a VPN site-to-site connection and route the http(s) traffic through this VPN to your kubernetes cluster. More about this in [site-to-site vpn](site-to-site-vpn.md)  
 
-You also need a load balancer if you want to access the cluster from outside.
+![network example](./kuba-network.svg)
 
 ## load balancer
+t.b.d.
