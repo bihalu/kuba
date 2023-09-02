@@ -3,7 +3,7 @@ Kubernetes on Alpine Linux
 
 If you have no idea about kubernetes, then you should read the documentation first [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)  
 
-tl;dr you can easily try kubernetes with kuba ;-)
+tl;dr you can easily try kubernetes with Kuba ;-)
 
 # description
 Kuba is a shell script that creates a self-executable package for installing kubernetes.  
@@ -72,9 +72,9 @@ Kubernetes itself doesn't need a lot of resources. It is designed to distribute 
 
 ## storage
 Kubernetes storage is a topic of its own.  
-Kuba uses openEBS as a storage solution. openEBS local PV with Hostpath is used in a single node cluster. This is the carefree package.  
+Kuba uses OpenEBS as a storage solution. OpenEBS local PV with Hostpath is used in a single node cluster. This is the carefree package.  
 
-In a more complex scenario with multiple worker nodes, you need a different storage solution. I would also like to examine openEBS with mayastor and rook ceph.
+In a more complex scenario with multiple worker nodes, you need a different storage solution. I would also like to examine OpenEBS with mayastor and rook ceph.
 
 # network
 Kubernetes has no specifications regarding the network. Only the nodes need to be able to communicate with each other. In practice, of course, you have to take things like a firewall or subnets into account. You also need a load balancer if you want to access the cluster from outside.  
