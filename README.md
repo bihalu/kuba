@@ -26,7 +26,7 @@ Finally a setup package with a size of 1.4GB is created :-)
 > build kuba-setup-1.28.0.tgz.self took 15 minutes 53 seconds
 
 # setup
-Setting up a Kubernetes cluster always starts with the initialization of the first control-plane node.  
+Setting up a Kubernetes cluster always starts with the initialization of the first control-plane node. You can choose between a single node cluster or a multi node cluster.  
 
 Kuba setup parameters:  
 
