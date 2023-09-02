@@ -1,9 +1,8 @@
 # kuba
-Kubernetes on Alpine Linux  
+<u>Kub</u>ernetes on <u>A</u>lpine Linux  
 
-If you have no idea about kubernetes, then you should read the documentation first [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)  
-
-tl;dr you can easily try kubernetes with Kuba ;-)
+If you have no idea about kubernetes, then you should read the documentation first -> [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)  
+tl;dr or you can easily try kubernetes with Kuba ;-)
 
 # description
 Kuba is a shell script that creates a self-executable package for installing kubernetes.  
@@ -16,7 +15,7 @@ You should run the script as root, because the packages will be downloaded and i
 
 The complete build process takes about 16 minutes (depending on your internet connection).
 
-``` bash
+```bash
 apk add bash git
 git clone https://github.com/bihalu/kuba.git
 cd kuba
@@ -28,7 +27,8 @@ Finally a setup package with a size of 1.4GB is created :-)
 
 # setup
 Setting up a Kubernetes cluster always starts with the initialization of the first control-plane node.  
-Table with all parameters for kuba setup:  
+
+Kuba setup parameters:  
 
 | Parameters | Description |
 | --- | --- |
@@ -40,11 +40,11 @@ Table with all parameters for kuba setup:
 | `delete` | not implemented yet - delete node from kubernetes cluster |
 
 ## init single
-For test and development environments, kuba offers to set up a single node cluster. This is the easiest and fastest way to create a working kubernetes cluster.
+For test and development environments, kuba can be set up as a single node cluster. This is the easiest and fastest way to create a working kubernetes cluster.
 
-Just copy the previously created setup package to a new Alpine Linux server and start it with the parameters "init single".
+Just [copy](a "scp kuba-setup-1.28.0.tgz.self root@192.168.178.21:~") the previously created setup package to a new Alpine Linux server and start it with the parameters "init single".
 
-``` bash
+```bash
 ./kuba-setup-1.28.0.tgz.self init single
 ```
 
@@ -52,13 +52,25 @@ The installation takes about 6 minutes.
 > setup took 5 minutes 54 seconds
 
 ## init cluster
-Has yet to be documented
+For a multi node kubernetes cluster you start with the first control-plane. This node has only an [overlay network](a "calico") but no storage and ingress controller. You need to add additional worker nodes.
+
+```bash
+./kuba-setup-1.28.0.tgz.self init cluster
+```
 
 ## join worker
-Has yet to be documented
+Adding a worker node is easy. However, check if you can establish an ssh connection to the control plane without entering a password. You may have to [exchange the ssh keys](doku/exchange-ssh-keys.md) beforehand.  
+When a worker node is added, an ingress controller and cert manager will be installed. 
+
+```bash
+./kuba-setup-1.28.0.tgz.self join worker <ip-control-plane>
+```
 
 ## join controlplane
 Has yet to be documented
+```bash
+./kuba-setup-1.28.0.tgz.self join controlplane <ip-control-plane>
+```
 
 # requirements
 Kubernetes itself doesn't need a lot of resources. It is designed to distribute the load across many nodes. If you want to operate heavy workloads in the cluster, then the count and resources for worker nodes must be adjusted in any case.
@@ -85,5 +97,3 @@ If you have a VPS with a public ip you can create a VPN site-to-site connection 
 
 ![network example](doku/kuba-network.svg)
 
-## load balancer
-t.b.d.
