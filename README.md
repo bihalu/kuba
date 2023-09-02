@@ -10,7 +10,7 @@ Alpine Linux version 3.18 is required to create the kuba installation package.
 In addition, bash and git are required.  
 You should run the script as root, because the packages will be downloaded and installed during the build process.
 
-The complete build process takes about 16 minutes (depending on the internet connection).
+The complete build process takes about 16 minutes (depending on your internet connection).
 
 ``` bash
 apk add bash git
@@ -80,9 +80,9 @@ Kubernetes has no specifications regarding the network. Only the nodes need to b
 
 ## homelab network example
 As an example i would like to give a typical homelab network for a kubernetes cluster. You can access the kubernetes cluster within your homelab network via node ports.  
-If you have a VPS with a public ip you can create a VPN site-to-site connection and route the http(s) traffic through this VPN to your kubernetes cluster. More about this in [site-to-site vpn](site-to-site-vpn.md)  
+If you have a VPS with a public ip you can create a VPN site-to-site connection and route the http(s) traffic through this VPN to your kubernetes cluster. More about this in [site-to-site vpn](doku/site-to-site-vpn.md)  
 
-![network example](./kuba-network.svg)
+![network example](doku/kuba-network.svg)
 
 ## load balancer
 t.b.d.
