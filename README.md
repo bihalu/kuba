@@ -1,5 +1,9 @@
 # kuba
-Kubernetes on Alpine Linux
+Kubernetes on Alpine Linux  
+
+If you have no idea about kubernetes, then you should read the documentation first [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)  
+
+tl;dr you can easily try kubernetes with kuba ;-)
 
 # description
 Kuba is a shell script that creates a self-executable package for installing kubernetes.  
@@ -55,9 +59,6 @@ Has yet to be documented
 
 ## join controlplane
 Has yet to be documented
-
-# kubernetes architecture
-Just a short overview, reference to [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)
 
 # requirements
 Kubernetes itself doesn't need a lot of resources. It is designed to distribute the load across many nodes. If you want to operate heavy workloads in the cluster, then the count and resources for worker nodes must be adjusted in any case.
