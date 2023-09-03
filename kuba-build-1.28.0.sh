@@ -371,6 +371,31 @@ spec:
          class: nginx
 EOF_ISSUER
 
+cat - > artefact/prom_values.yaml <<EOF_PROM_VALUES
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: default
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+ 
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: default
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+EOF_PROM_VALUES
+
+
 ################################################################################
 # create setup.sh
 cat - > setup.sh <<EOF_SETUP
@@ -524,7 +549,7 @@ if [ \$CLUSTER = true ] ; then
 
   ################################################################################
   # install projectcalico tigera-operator v3.26.1
-  helm upgrade --install tigera-operator ./helm/tigera-operator/tigera-operator-v3.26.1.tgz \
+  helm upgrade --install tigera-operator helm/tigera-operator/tigera-operator-v3.26.1.tgz \
     --create-namespace \
     --namespace tigera-operator \
     --version v3.26.1
@@ -541,14 +566,14 @@ if [ \$SINGLE = true ] ; then
 
   ################################################################################
   # install projectcalico tigera-operator v3.26.1
-  helm upgrade --install tigera-operator ./helm/tigera-operator/tigera-operator-v3.26.1.tgz \
+  helm upgrade --install tigera-operator helm/tigera-operator/tigera-operator-v3.26.1.tgz \
     --create-namespace \
     --namespace tigera-operator \
     --version v3.26.1
 
   ################################################################################
   # install openebs openebs 3.8.0
-  helm upgrade --install openebs ./helm/openebs/openebs-3.8.0.tgz \
+  helm upgrade --install openebs helm/openebs/openebs-3.8.0.tgz \
     --create-namespace \
     --namespace openebs \
     --version 3.8.0
@@ -558,7 +583,7 @@ if [ \$SINGLE = true ] ; then
 
   ################################################################################
   # install ingress-nginx controller
-  helm upgrade --install ingress-nginx ./helm/ingress-nginx/ingress-nginx-4.7.1.tgz \
+  helm upgrade --install ingress-nginx helm/ingress-nginx/ingress-nginx-4.7.1.tgz \
     --create-namespace \
     --namespace ingress-nginx \
     --version 4.7.1 \
@@ -568,7 +593,7 @@ if [ \$SINGLE = true ] ; then
 
   ################################################################################
   # install cert-manager
-  helm upgrade --install cert-manager ./helm/cert-manager/cert-manager-v1.12.3.tgz \
+  helm upgrade --install cert-manager helm/cert-manager/cert-manager-v1.12.3.tgz \
     --create-namespace \
     --namespace cert-manager \
     --version v1.12.3 \
@@ -578,12 +603,15 @@ if [ \$SINGLE = true ] ; then
 
   ################################################################################
   # alertmanager, prometheus and grafana 
-  helm upgrade --install kube-prometheus-stack ./helm/kube-prometheus-stack/kube-prometheus-stack-48.3.1.tgz \
+  helm upgrade --install kube-prometheus-stack helm/kube-prometheus-stack/kube-prometheus-stack-48.3.1.tgz \
     --create-namespace \
     --namespace kube-prometheus-stack \
     --version 48.3.1 \
     --set alertmanager.service.type=NodePort \
-    --set prometheus.service.type=NodePort
+    --set prometheus.service.type=NodePort \
+    --set kubeProxy.service.selector.k8s-app=kube-proxy \
+    --set kubeEtcd.service.selector.component=etcd \
+    --values artefact/prom_values.yaml
 fi
 
 ################################################################################
@@ -605,7 +633,7 @@ if [ \$JOIN = true ] && [ \$WORKER = true ] ; then
 
   ################################################################################
   # install ingress-nginx controller
-  helm upgrade --install ingress-nginx ./helm/ingress-nginx/ingress-nginx-4.7.1.tgz \
+  helm upgrade --install ingress-nginx helm/ingress-nginx/ingress-nginx-4.7.1.tgz \
     --create-namespace \
     --namespace ingress-nginx \
     --version 4.7.1 \
@@ -615,7 +643,7 @@ if [ \$JOIN = true ] && [ \$WORKER = true ] ; then
 
   ################################################################################
   # install cert-manager
-  helm upgrade --install cert-manager ./helm/cert-manager/cert-manager-v1.12.3.tgz \
+  helm upgrade --install cert-manager helm/cert-manager/cert-manager-v1.12.3.tgz \
     --create-namespace \
     --namespace cert-manager \
     --version v1.12.3 \

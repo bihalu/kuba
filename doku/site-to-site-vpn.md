@@ -1,7 +1,7 @@
-# site to site vpn
+# Site to site vpn
 
 
-## [vps](a "virtual private server") with public IP
+## [VPS](a "Virtual private server") with public IP
 
 install and configure wireguard  
 
@@ -9,7 +9,7 @@ peer vps
 
 peer kuba
 
-## load balancer
+## Load balancer
 
 nginx stream module config  
 http (port 80) and https (port 443)

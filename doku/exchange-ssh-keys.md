@@ -1,4 +1,4 @@
-# exchange ssh-keys
+# Exchange ssh-keys
 
 Let's say you have three nodes and want to get from each node to another without password prompt. Then you have to create an ssh key on each node and distribute the public key to everyone else.
 
