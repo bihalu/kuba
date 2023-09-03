@@ -377,7 +377,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: default
+          #storageClassName: openebs-hostpath
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -388,7 +388,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: default
+          #storageClassName: openebs-hostpath
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
