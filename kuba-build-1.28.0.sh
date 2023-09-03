@@ -620,6 +620,8 @@ if [ \$SINGLE = true ] ; then
     --version 48.3.1 \
     --set alertmanager.service.type=NodePort \
     --set prometheus.service.type=NodePort \
+    --set grafana.service.type=NodePort \
+    --set grafana.service.nodePort=30303 \
     --values artefact/prom_values.yaml
 fi
 
