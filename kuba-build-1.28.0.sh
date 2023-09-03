@@ -371,6 +371,7 @@ spec:
          class: nginx
 EOF_ISSUER
 
+# prometheus values
 cat - > artefact/prom_values.yaml <<EOF_PROM_VALUES
 alertmanager:
   alertmanagerSpec:
@@ -393,38 +394,7 @@ prometheus:
           resources:
             requests:
               storage: 10Gi
-
-# kubeProxy:
-#   service:
-#     port: 10249 
-#     targetPort: 10249
-#     selector:
-#       k8s-app: kube-proxy
-
-# kubeEtcd:
-#   service:
-#     port: 2381 
-#     targetPort: 2381
-#     selector:
-#       component: etcd
-
-# kubeControllerManager:
-#   service:
-#     port: 10257
-#     targetPort: 10257
-#     selector:
-#       component: kube-controller-manager
-
-# kubeScheduler:
-#   service:
-#     port: 10259 
-#     targetPort: 10259
-#     selector:
-#       component: kube-scheduler
-#   serviceMonitor:
-#     https: false
 EOF_PROM_VALUES
-
 
 ################################################################################
 # create setup.sh
@@ -556,26 +526,60 @@ if [ \$INIT = true ] ; then
 
   ################################################################################
   # init cluster
-  kubeadm config print init-defaults > artefact/init_defaults.yaml
+  CONTROL_PLANE_ENDPOINT=\$(ip -brief address show eth0 | awk '{print \$3}' | awk -F/ '{print \$1}')
 
-  cat - > artefact/init_defaults.yaml <<EOF_INIT_DEFAULTS
+  # init values -> kubeadm config print init-defaults + modifications
+  cat - > artefact/init_values.yaml <<EOF_INIT_VALUES
+apiVersion: kubeadm.k8s.io/v1beta3
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: abcdef.0123456789abcdef
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 1.2.3.4
+  bindPort: 6443
+nodeRegistration:
+  criSocket: unix:///var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+  name: node
+  taints: null
+---
+apiServer:
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta3
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controllerManager: {}
+dns: {}
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.k8s.io
+kind: ClusterConfiguration
+controlPlaneEndpoint: $CONTROL_PLANE_ENDPOINT
+kubernetesVersion: $VERSION
+networking:
+  dnsDomain: cluster.local
+  serviceSubnet: $SERVICE_CIDR
+  podSubnet: $POD_NETWORK_CIDR
+scheduler: {}
 controllerManager:
   extraArgs:
     bind-address: "0.0.0.0"
 scheduler:
   extraArgs:
     bind-address: "0.0.0.0"
-EOF_INIT_DEFAULTS
+EOF_INIT_VALUES
 
-  CONTROL_PLANE_ENDPOINT=\$(ip -brief address show eth0 | awk '{print \$3}' | awk -F/ '{print \$1}')
   kubeadm init \
-    --pod-network-cidr=$POD_NETWORK_CIDR \
-    --service-cidr=$SERVICE_CIDR \
-    --kubernetes-version=$VERSION \
     --upload-certs \
-    --control-plane-endpoint=\$CONTROL_PLANE_ENDPOINT \
     --node-name=\$HOSTNAME \
-    --config=artefact/init_defaults.yaml
+    --config=artefact/init_values.yaml
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
 
   ################################################################################
