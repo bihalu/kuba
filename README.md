@@ -1,7 +1,7 @@
 # Kuba
 <ins>Kub</ins>ernetes on <ins>A</ins>lpine Linux  
 
-If you have no idea about kubernetes, then you should read the documentation first -> [kubernetes doku](https://kubernetes.io/docs/concepts/overview/)  
+If you have no idea about kubernetes, then you should read the documentation first -> [kubernetes docs](https://kubernetes.io/docs/concepts/overview/)  
 tl;dr or you can easily try kubernetes with Kuba ;-)
 
 # Description
@@ -59,7 +59,7 @@ For a multi node kubernetes cluster you start with the first control-plane. This
 ```
 
 ## Join worker
-Adding a worker node is easy. However, check if you can establish an ssh connection to the control plane without entering a password. You may have to [exchange the ssh keys](doku/exchange-ssh-keys.md) beforehand.  
+Adding a worker node is easy. However, check if you can establish an ssh connection to the control plane without entering a password. You may have to [exchange the ssh keys](docs/exchange-ssh-keys.md) beforehand.  
 When a worker node is added, an ingress controller and cert manager will be installed. 
 
 ```bash
@@ -100,7 +100,7 @@ Kubernetes has no specifications regarding the network. Only the nodes need to b
 
 ## Homelab network example
 As an example i would like to give a typical homelab network for a kubernetes cluster. You can access the kubernetes cluster within your homelab network via node ports.  
-If you have a VPS with a public ip you can create a VPN site-to-site connection and route the http(s) traffic through this VPN to your kubernetes cluster. More about this in [site-to-site vpn](doku/site-to-site-vpn.md)  
+If you have a VPS with a public ip you can create a VPN site-to-site connection and route the http(s) traffic through this VPN to your kubernetes cluster. More about this in [site-to-site vpn](docs/site-to-site-vpn.md)  
 
-![network example](doku/kuba-network.svg)
+![network example](docs/kuba-network.svg)
 
