@@ -103,6 +103,13 @@ https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/helm-3.11.3-r1.apk
 https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/musl-obstack-1.2.3-r2.apk
 https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/libucontext-1.2-r2.apk
 https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/gcompat-1.1.0-r1.apk
+# curl
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/ca-certificates-20230506-r0.apk
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/brotli-libs-1.0.9-r14.apk
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/nghttp2-libs-1.55.1-r0.apk
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/libcurl-8.2.1-r0.apk
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/curl-8.2.1-r0.apk
+https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/ifupdown-ng-wireguard-0.12.1-r2.apk
 EOL_PACKAGES
 
 SKIP_PACKAGES=0
@@ -535,9 +542,10 @@ if [ \$INIT = true ] ; then
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
 
   ################################################################################
-  # patch bind-address for controller-manager and scheduler
+  # patch metrics endpoints for controller-manager, scheduler and etcd
   sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-controller-manager.yaml
   sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-scheduler.yaml
+  sed -e "s/- --listen-metrics-urls=http:\/\/127.0.0.1/- --listen-metrics-urls=http:\/\/0.0.0.0/" -i /etc/kubernetes/manifests/etcd.yaml
 
   ################################################################################
   # copy kube config
