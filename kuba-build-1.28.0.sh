@@ -394,33 +394,35 @@ prometheus:
             requests:
               storage: 10Gi
 
-kubeProxy:
-  service:
-    port: 10249 
-    targetPort: 10249
-    selector:
-      k8s-app: kube-proxy
+# kubeProxy:
+#   service:
+#     port: 10249 
+#     targetPort: 10249
+#     selector:
+#       k8s-app: kube-proxy
 
-kubeEtcd:
-  service:
-    port: 2381 
-    targetPort: 2381
-    selector:
-      component: etcd
+# kubeEtcd:
+#   service:
+#     port: 2381 
+#     targetPort: 2381
+#     selector:
+#       component: etcd
 
-kubeControllerManager:
-  service:
-    port: 10257
-    targetPort: 10257
-    selector:
-      component: kube-controller-manager
+# kubeControllerManager:
+#   service:
+#     port: 10257
+#     targetPort: 10257
+#     selector:
+#       component: kube-controller-manager
 
-kubeScheduler:
-  service:
-    port: 10259 
-    targetPort: 10259
-    selector:
-      component: kube-scheduler
+# kubeScheduler:
+#   service:
+#     port: 10259 
+#     targetPort: 10259
+#     selector:
+#       component: kube-scheduler
+#   serviceMonitor:
+#     https: false
 EOF_PROM_VALUES
 
 
@@ -554,6 +556,17 @@ if [ \$INIT = true ] ; then
 
   ################################################################################
   # init cluster
+  kubeadm config print init-defaults > artefact/init_defaults.yaml
+
+  cat - > artefact/init_defaults.yaml <<EOF_INIT_DEFAULTS
+controllerManager:
+  extraArgs:
+    bind-address: "0.0.0.0"
+scheduler:
+  extraArgs:
+    bind-address: "0.0.0.0"
+EOF_INIT_DEFAULTS
+
   CONTROL_PLANE_ENDPOINT=\$(ip -brief address show eth0 | awk '{print \$3}' | awk -F/ '{print \$1}')
   kubeadm init \
     --pod-network-cidr=$POD_NETWORK_CIDR \
@@ -561,7 +574,8 @@ if [ \$INIT = true ] ; then
     --kubernetes-version=$VERSION \
     --upload-certs \
     --control-plane-endpoint=\$CONTROL_PLANE_ENDPOINT \
-    --node-name=\$HOSTNAME
+    --node-name=\$HOSTNAME \
+    --config=artefact/init_defaults.yaml
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
 
   ################################################################################
