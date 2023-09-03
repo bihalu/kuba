@@ -393,6 +393,34 @@ prometheus:
           resources:
             requests:
               storage: 10Gi
+
+kubeProxy:
+  service:
+    port: 10249 
+    targetPort: 10249
+    selector:
+      k8s-app: kube-proxy
+
+kubeEtcd:
+  service:
+    port: 2381 
+    targetPort: 2381
+    selector:
+      component: etcd
+
+kubeControllerManager:
+  service:
+    port: 10257
+    targetPort: 10257
+    selector:
+      component: kube-controller-manager
+
+kubeScheduler:
+  service:
+    port: 10259 
+    targetPort: 10259
+    selector:
+      component: kube-scheduler
 EOF_PROM_VALUES
 
 
@@ -609,8 +637,6 @@ if [ \$SINGLE = true ] ; then
     --version 48.3.1 \
     --set alertmanager.service.type=NodePort \
     --set prometheus.service.type=NodePort \
-    --set kubeProxy.service.selector.k8s-app=kube-proxy \
-    --set kubeEtcd.service.selector.component=etcd \
     --values artefact/prom_values.yaml
 fi
 
