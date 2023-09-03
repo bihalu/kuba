@@ -371,14 +371,13 @@ spec:
          class: nginx
 EOF_ISSUER
 
-# prometheus values
+# prometheus values -> prom_values.yaml
 cat - > artefact/prom_values.yaml <<EOF_PROM_VALUES
 alertmanager:
   alertmanagerSpec:
     storage:
       volumeClaimTemplate:
         spec:
-          #storageClassName: openebs-hostpath
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -389,7 +388,6 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          #storageClassName: openebs-hostpath
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -527,60 +525,19 @@ if [ \$INIT = true ] ; then
   ################################################################################
   # init cluster
   CONTROL_PLANE_ENDPOINT=\$(ip -brief address show eth0 | awk '{print \$3}' | awk -F/ '{print \$1}')
-
-  # init values -> kubeadm config print init-defaults + modifications
-  cat - > artefact/init_values.yaml <<EOF_INIT_VALUES
-apiVersion: kubeadm.k8s.io/v1beta3
-bootstrapTokens:
-- groups:
-  - system:bootstrappers:kubeadm:default-node-token
-  token: abcdef.0123456789abcdef
-  ttl: 24h0m0s
-  usages:
-  - signing
-  - authentication
-kind: InitConfiguration
-localAPIEndpoint:
-  advertiseAddress: 1.2.3.4
-  bindPort: 6443
-nodeRegistration:
-  criSocket: unix:///var/run/containerd/containerd.sock
-  imagePullPolicy: IfNotPresent
-  name: node
-  taints: null
----
-apiServer:
-  timeoutForControlPlane: 4m0s
-apiVersion: kubeadm.k8s.io/v1beta3
-certificatesDir: /etc/kubernetes/pki
-clusterName: kubernetes
-controllerManager: {}
-dns: {}
-etcd:
-  local:
-    dataDir: /var/lib/etcd
-imageRepository: registry.k8s.io
-kind: ClusterConfiguration
-controlPlaneEndpoint: $CONTROL_PLANE_ENDPOINT
-kubernetesVersion: $VERSION
-networking:
-  dnsDomain: cluster.local
-  serviceSubnet: $SERVICE_CIDR
-  podSubnet: $POD_NETWORK_CIDR
-scheduler: {}
-controllerManager:
-  extraArgs:
-    bind-address: "0.0.0.0"
-scheduler:
-  extraArgs:
-    bind-address: "0.0.0.0"
-EOF_INIT_VALUES
-
   kubeadm init \
     --upload-certs \
     --node-name=\$HOSTNAME \
-    --config=artefact/init_values.yaml
+    --pod-network-cidr=$POD_NETWORK_CIDR \
+    --service-cidr=$SERVICE_CIDR \
+    --kubernetes-version=$VERSION \
+    --control-plane-endpoint=\$CONTROL_PLANE_ENDPOINT
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
+
+  ################################################################################
+  # patch bind-address for controller-manager and scheduler
+  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-controller-manager.yaml
+  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-scheduler.yaml
 
   ################################################################################
   # copy kube config
