@@ -26,7 +26,7 @@ pee break :-o
 ```bash
 ./kuba-setup-1.28.0.tgz.self init single
 ```
-Takes about 6 minutes ...  
+Takes about 5 minutes ...  
 almost done   
 
 You can have a look at the cluster with k9s tool.  
@@ -34,16 +34,23 @@ You can have a look at the cluster with k9s tool.
 ```bash
 k9s
 ```
+
+![k9s screenshot](k9s.png)
 Pods are created.  
-``/\_/\``  
-``(='_')``   
-``(,(")(")``  
+ 
 
 ## 4. Install wordpress 
 ```bash
 ./kuba-apps-2023.9.tgz.self install wordpress
 ```
-Only 3 minutes left ...  
-Done
+Only 2 minutes left ...  
+Follow the steps from the wordpress installation and you are done  
+
+## Summary
+You can set up a kubernetes cluster in under half an hour. If you have already built the setup and app package it is even faster. Save these packages on a usb stick and you can quickly set up a kubernetes cluster in no time.  
+
+``/\_/\``  
+``(='_')``   
+``(,(")(")`` 
 
 

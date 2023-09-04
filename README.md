@@ -2,7 +2,9 @@
 <ins>Kub</ins>ernetes on <ins>A</ins>lpine Linux  
 
 If you have no idea about kubernetes, then you should read the documentation first -> [kubernetes docs](https://kubernetes.io/docs/concepts/overview/)  
-tl;dr or you can easily try kubernetes with Kuba ;-)
+tl;dr  
+or you can easily try kubernetes with Kuba ;-)  
+Use the [quickstart](docs/quickstart.md) guide for this.
 
 # Description
 Kuba is a shell script that creates a self-executable package for installing kubernetes.  
