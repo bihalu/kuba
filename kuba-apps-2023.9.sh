@@ -211,7 +211,7 @@ PACK=true
 if [[ ${PACK} = true ]] ; then
   echo "Be patient creating self extracting archive ..."
   # pack and create self extracting archive
-  tar -czf ${TAR_FILE} app.sh container/ helm/ artefact/
+  tar -czf ${TAR_FILE} app.sh container/ helm/
 
   echo '#!/bin/sh' > $SELF_EXTRACTABLE
   echo 'echo Be patient extracting archive ...' >> $SELF_EXTRACTABLE

@@ -20,6 +20,8 @@ cd ~
 apk add bash git
 git clone https://github.com/bihalu/kuba.git
 cd kuba
+git fetch
+git pull
 ./kuba-build-1.28.0.sh
 ```
 
@@ -123,6 +125,8 @@ cd ~
 apk add bash git
 git clone https://github.com/bihalu/kuba.git
 cd kuba
+git fetch
+git pull
 ./kuba-apps-2023.9.sh
 ```
 
@@ -141,8 +145,7 @@ Uninstall is self-explanatory
 ```
 
 ## Access apps
-The applications are deployed with fixed node ports and the credentials are stored in kubernetes secrets. Here is an overview of how to access the applications.  
-Please replace the ip address of your kubernetes node.  
+The applications are deployed with fixed node ports and the credentials are stored in kubernetes secrets. Here is an overview of how to access the applications. Please replace the ip address of your kubernetes node.  
 
 | Application | Url | User | Password retrival command |
 | --- | --- | --- | --- |
