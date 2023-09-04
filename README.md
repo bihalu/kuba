@@ -16,6 +16,7 @@ You should run the script as root, because the packages will be downloaded and i
 The complete build process takes about 16 minutes (depending on your internet connection).
 
 ```bash
+cd ~
 apk add bash git
 git clone https://github.com/bihalu/kuba.git
 cd kuba
@@ -104,3 +105,50 @@ If you have a VPS with a public ip you can create a VPN site-to-site connection 
 
 ![network example](docs/kuba-network.svg)
 
+# Apps
+Kubernetes applications can be deployed with kubectl or helm. However, you need some experience for this. That's why I created a so-called kuba app package with a few applications. This means that the applications can be installed just as easily as kuba itself.
+
+## Kuba app package
+The kuba app package contains these applications:
+
+* wordpress
+* minio
+* minecraft 
+
+### Build
+First you build the kuba app package. It then contains all necessary artefacts for the installation of wordpress, minio and minecraft in an argap environment.
+
+```bash
+cd ~
+apk add bash git
+git clone https://github.com/bihalu/kuba.git
+cd kuba
+./kuba-apps-2023.9.sh
+```
+
+### Install
+Then [copy](a "scp kuba-apps-2023.9.tgz.self root@192.168.178.21:~") the previously created app package to your kubernetes node and install the desired application.
+
+```bash
+./kuba-apps-2023.9.tgz.self install wordpress
+```
+
+### Uninstall
+Uninstall is self-explanatory
+
+```bash
+./kuba-apps-2023.9.tgz.self uninstall wordpress
+```
+
+## Access apps
+The applications are deployed with fixed node ports and the credentials are stored in kubernetes secrets. Here is an overview of how to access the applications.  
+Please replace the ip address of your kubernetes node.  
+
+| Application | Url | User | Password retrival command |
+| --- | --- | --- | --- |
+| wordpress | http://192.168.178.53:30000/admin | admin | echo $(kubectl get secret --namespace wordpress wordpress -o jsonpath="{.data.wordpress-password}" \| base64 -d) |
+| minio | http://192.168.178.53:30001/ | admin | echo $(kubectl get secret --namespace minio minio -o jsonpath="{.data.root-password}" \| base64 -d) |
+| grafana | http://192.168.178.53:30303/ | admin | echo $(kubectl get secret --namespace kube-prometheus-stack kube-prometheus-stack-grafana -o jsonpath="{.data.admin-password}" \| base64 -d) |
+| prometheus | http://192.168.178.53:30090/ | none | none |
+| alertmanager | http://192.168.178.53:30903/ | none | none |
+| minecraft | 192.168.178.53:30003 | none | none |

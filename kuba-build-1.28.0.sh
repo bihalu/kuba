@@ -1,9 +1,10 @@
 #!/bin/bash
 
+NAME="kuba-setup"
 VERSION="1.28.0"
 POD_NETWORK_CIDR="10.244.0.0/16"
-SERVICE_CIDR="10.96.0.0/12"
-EMAIL="hansi@bihalu.de"
+SVC_NETWORK_CIDR="10.96.0.0/12"
+EMAIL="john.doe@inter.net"
 BUILD_START=$(date +%s)
 
 ################################################################################
@@ -389,7 +390,6 @@ alertmanager:
           resources:
             requests:
               storage: 10Gi
- 
 prometheus:
   prometheusSpec:
     storageSpec:
@@ -536,7 +536,7 @@ if [ \$INIT = true ] ; then
     --upload-certs \
     --node-name=\$HOSTNAME \
     --pod-network-cidr=$POD_NETWORK_CIDR \
-    --service-cidr=$SERVICE_CIDR \
+    --service-cidr=$SVC_NETWORK_CIDR \
     --kubernetes-version=$VERSION \
     --control-plane-endpoint=\$CONTROL_PLANE_ENDPOINT
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
@@ -709,7 +709,6 @@ chmod +x setup.sh
 
 ################################################################################
 # create self extracting archive
-NAME="kuba-setup"
 TAR_FILE="${NAME}-${VERSION}.tgz"
 SELF_EXTRACTABLE="$TAR_FILE.self"
 PACK=true

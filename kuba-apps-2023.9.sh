@@ -1,12 +1,19 @@
 #!/bin/bash
 
-NAME="minecraft"
-VERSION="1.20.1"
+NAME="kuba-apps"
+VERSION="2023.9"
 BUILD_START=$(date +%s)
 
 ################################################################################
 # container images for airgap installation
 readarray -t IMAGES <<EOL_IMAGES
+################################################################################
+# wordpress 6.3.1 -> https://artifacthub.io/packages/helm/bitnami/wordpress/17.1.6
+docker.io/bitnami/wordpress:6.3.1-debian-11-r2
+docker.io/bitnami/mariadb:11.0.3-debian-11-r5
+################################################################################
+# minio 2023.7.18 -> https://artifacthub.io/packages/helm/bitnami/minio/12.8.1
+docker.io/bitnami/minio:2023.7.18-debian-11-r0
 ################################################################################
 # mincraft 1.20.1 -> https://artifacthub.io/packages/helm/minecraft-server-charts/minecraft/4.9.5
 docker.io/itzg/minecraft-server:latest
@@ -52,6 +59,8 @@ fi
 # helm charts -> chart_url chart_repo chart_name chart_version
 readarray -t HELM_CHARTS <<EOL_HELM_CHARTS
 https://itzg.github.io/minecraft-server-charts itzg minecraft 4.9.5
+https://charts.bitnami.com/bitnami bitnami minio 12.8.1
+https://charts.bitnami.com/bitnami bitnami wordpress 17.1.6
 EOL_HELM_CHARTS
 
 SKIP_CHARTS=0
@@ -103,15 +112,60 @@ echo "app \$1 \$2"
 
 INSTALL=false
 UNINSTALL=false
-MINECRAFT=true
 
 [ "\$1" = install ] && INSTALL=true
 [ "\$1" = uninstall ] && UNINSTALL=true
+
+WORDPRESS=false
+MINIO=false
+MINECRAFT=false
+
+[ "\$2" = wordpress ] && WORDPRESS=true
+[ "\$2" = minio ] && MINIO=true
+[ "\$2" = minecraft ] && MINECRAFT=true
 
 ################################################################################
 # import container images
 echo "Be patient import container images ..."
 ctr -n=k8s.io image import container/images.tar
+
+################################################################################
+# install wordpress
+if [ \$INSTALL = true ] && [ \$WORDPRESS = true ] ; then
+  helm upgrade --install wordpress helm/wordpress/wordpress-17.1.6.tgz \
+    --create-namespace \
+    --namespace wordpress \
+    --version 17.1.6 \
+    --set service.type=NodePort \
+    --set service.nodePorts.http=30000 \
+    --set mariadb.auth.rootPassword="mariadb.auth.rootPassword" \
+    --set mariadb.auth.password="mariadb.auth.password" \
+    --set wordpressUsername="admin"
+fi
+
+################################################################################
+# uninstall wordpress
+if [ \$UNINSTALL = true ] && [ \$WORDPRESS = true ] ; then
+  helm uninstall wordpress --namespace wordpress
+fi
+
+################################################################################
+# install minio
+if [ \$INSTALL = true ] && [ \$MINIO = true ] ; then
+  helm upgrade --install minio helm/minio/minio-12.8.1.tgz \
+    --create-namespace \
+    --namespace minio \
+    --version 12.8.1 \
+    --set service.type=NodePort \
+    --set service.nodePorts.console=30001 \
+    --set service.nodePorts.api=30002
+fi
+
+################################################################################
+# uninstall minio
+if [ \$UNINSTALL = true ] && [ \$MINIO = true ] ; then
+  helm uninstall minio --namespace minio
+fi
 
 ################################################################################
 # install minecraft
@@ -126,7 +180,7 @@ if [ \$INSTALL = true ] && [ \$MINECRAFT = true ] ; then
     --set minecraftServer.serviceType=NodePort \
     --set minecraftServer.nodePort=30003
 fi
-  
+
 ################################################################################
 # uninstall minecraft
 if [ \$UNINSTALL = true ] && [ \$MINECRAFT = true ] ; then
@@ -157,7 +211,7 @@ PACK=true
 if [[ ${PACK} = true ]] ; then
   echo "Be patient creating self extracting archive ..."
   # pack and create self extracting archive
-  tar -czf ${TAR_FILE} app.sh container/ helm/
+  tar -czf ${TAR_FILE} app.sh container/ helm/ artefact/
 
   echo '#!/bin/sh' > $SELF_EXTRACTABLE
   echo 'echo Be patient extracting archive ...' >> $SELF_EXTRACTABLE
