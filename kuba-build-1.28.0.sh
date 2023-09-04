@@ -541,11 +541,6 @@ if [ \$INIT = true ] ; then
     --control-plane-endpoint=\$CONTROL_PLANE_ENDPOINT
   [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
 
-  ################################################################################
-  # patch metrics endpoints for controller-manager, scheduler and etcd
-  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-controller-manager.yaml
-  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-scheduler.yaml
-  sed -e "s/- --listen-metrics-urls=http:\/\/127.0.0.1/- --listen-metrics-urls=http:\/\/0.0.0.0/" -i /etc/kubernetes/manifests/etcd.yaml
 
   ################################################################################
   # copy kube config
@@ -564,6 +559,11 @@ if [ \$CLUSTER = true ] ; then
     --create-namespace \
     --namespace tigera-operator \
     --version v3.26.1
+  if [ \$? != 0 ] ; then
+    # give grace period of 2 minutes to get node ready
+    kubectl wait --timeout=2m --for=condition=Ready node/\$HOSTNAME
+    [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
+  fi
 fi
 
 ################################################################################
@@ -581,6 +581,11 @@ if [ \$SINGLE = true ] ; then
     --create-namespace \
     --namespace tigera-operator \
     --version v3.26.1
+  if [ \$? != 0 ] ; then
+    # give grace period of 2 minutes to get node ready
+    kubectl wait --timeout=2m --for=condition=Ready node/\$HOSTNAME
+    [ \$? != 0 ] && echo "error: can't initialize cluster" && exit 1
+  fi
 
   ################################################################################
   # install openebs openebs 3.8.0
@@ -623,6 +628,12 @@ if [ \$SINGLE = true ] ; then
     --set grafana.service.type=NodePort \
     --set grafana.service.nodePort=30303 \
     --values artefact/prom_values.yaml
+
+  ################################################################################
+  # patch metrics endpoints for controller-manager, scheduler and etcd
+  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-controller-manager.yaml
+  sed -e "s/- --bind-address=127.0.0.1/- --bind-address=0.0.0.0/" -i /etc/kubernetes/manifests/kube-scheduler.yaml
+  sed -e "s/- --listen-metrics-urls=http:\/\/127.0.0.1/- --listen-metrics-urls=http:\/\/0.0.0.0/" -i /etc/kubernetes/manifests/etcd.yaml
 fi
 
 ################################################################################
