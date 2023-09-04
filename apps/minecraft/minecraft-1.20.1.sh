@@ -109,6 +109,11 @@ MINECRAFT=true
 [ "\$1" = uninstall ] && UNINSTALL=true
 
 ################################################################################
+# import container images
+echo "Be patient import container images ..."
+ctr -n=k8s.io image import container/images.tar
+
+################################################################################
 # install minecraft
 if [ \$INSTALL = true ] && [ \$MINECRAFT = true ] ; then
   helm upgrade --install minecraft helm/minecraft/minecraft-4.9.5.tgz \
@@ -130,7 +135,7 @@ fi
 
 ################################################################################
 # cleanup
-rm -rf setup.sh container/ helm/ 
+rm -rf app.sh container/ helm/ 
 
 ################################################################################
 # finish

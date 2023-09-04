@@ -109,6 +109,11 @@ MINIO=true
 [ "\$1" = uninstall ] && UNINSTALL=true
 
 ################################################################################
+# import container images
+echo "Be patient import container images ..."
+ctr -n=k8s.io image import container/images.tar
+
+################################################################################
 # install minio
 if [ \$INSTALL = true ] && [ \$MINIO = true ] ; then
   helm upgrade --install minio helm/minio/minio-12.8.1.tgz \
@@ -128,7 +133,7 @@ fi
 
 ################################################################################
 # cleanup
-rm -rf setup.sh container/ helm/ 
+rm -rf app.sh container/ helm/ 
 
 ################################################################################
 # finish

@@ -113,6 +113,11 @@ DOMAIN=""
 [ ! -z "\$2" ] && DOMAIN="\$2"
 
 ################################################################################
+# import container images
+echo "Be patient import container images ..."
+ctr -n=k8s.io image import container/images.tar
+
+################################################################################
 # install wordpress
 if [ \$INSTALL = true ] && [ \$WORDPRESS = true ] ; then
   if [ -z "\$DOMAIN" ] ; then
@@ -151,7 +156,7 @@ fi
 
 ################################################################################
 # cleanup
-rm -rf setup.sh container/ helm/ 
+rm -rf app.sh container/ helm/ 
 
 ################################################################################
 # finish

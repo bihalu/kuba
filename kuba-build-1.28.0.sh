@@ -693,7 +693,7 @@ fi
 
 ################################################################################
 # cleanup
-rm -rf setup.sh alpine/ container/ artefact/ # helm/  
+rm -rf setup.sh alpine/ container/ artefact/ helm/  
 
 ################################################################################
 # finish
