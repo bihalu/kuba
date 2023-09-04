@@ -1,8 +1,8 @@
 # Quickstart
 
-You need a clean Alpine Linux v3.18 with 4CPU, 8GB RAM and 40GB DISK.
+You need a clean Alpine Linux version 3.18 with 4CPU, 8GB RAM and 40GB DISK.
 
-## 1. Build kuba setup package
+## 1. Build KubA setup package
 ```bash
 cd ~
 apk add bash git
@@ -15,7 +15,7 @@ git pull
 Takes about 15 minutes ...  
 coffe break ;-)
 
-## 2. Build kuba app package
+## 2. Build KubA app package
 ```bash
 ./kuba-apps-2023.9.sh
 ```
